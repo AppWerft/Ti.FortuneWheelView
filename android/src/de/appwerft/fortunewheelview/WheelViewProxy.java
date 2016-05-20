@@ -22,49 +22,44 @@ import org.appcelerator.titanium.view.TiUIView;
 
 import android.app.Activity;
 
-
 // This proxy can be created by calling Wheel.createExample({message: "hello world"})
-@Kroll.proxy(creatableInModule=WheelModule.class)
-public class ExampleProxy extends TiViewProxy
-{
+@Kroll.proxy(creatableInModule = WheelViewModule.class)
+public class WheelViewProxy extends TiViewProxy {
 	// Standard Debugging variables
 	private static final String LCAT = "ExampleProxy";
 	private static final boolean DBG = TiConfig.LOGD;
 
-	private class ExampleView extends TiUIView
-	{
+	private class ExampleView extends TiUIView {
 		public ExampleView(TiViewProxy proxy) {
 			super(proxy);
 			LayoutArrangement arrangement = LayoutArrangement.DEFAULT;
 
 			if (proxy.hasProperty(TiC.PROPERTY_LAYOUT)) {
-				String layoutProperty = TiConvert.toString(proxy.getProperty(TiC.PROPERTY_LAYOUT));
+				String layoutProperty = TiConvert.toString(proxy
+						.getProperty(TiC.PROPERTY_LAYOUT));
 				if (layoutProperty.equals(TiC.LAYOUT_HORIZONTAL)) {
 					arrangement = LayoutArrangement.HORIZONTAL;
 				} else if (layoutProperty.equals(TiC.LAYOUT_VERTICAL)) {
 					arrangement = LayoutArrangement.VERTICAL;
 				}
 			}
-			setNativeView(new TiCompositeLayout(proxy.getActivity(), arrangement));
+			setNativeView(new TiCompositeLayout(proxy.getActivity(),
+					arrangement));
 		}
 
 		@Override
-		public void processProperties(KrollDict d)
-		{
+		public void processProperties(KrollDict d) {
 			super.processProperties(d);
 		}
 	}
 
-
 	// Constructor
-	public ExampleProxy()
-	{
+	public WheelViewProxy() {
 		super();
 	}
 
 	@Override
-	public TiUIView createView(Activity activity)
-	{
+	public TiUIView createView(Activity activity) {
 		TiUIView view = new ExampleView(this);
 		view.getLayoutParams().autoFillsHeight = true;
 		view.getLayoutParams().autoFillsWidth = true;
@@ -73,32 +68,30 @@ public class ExampleProxy extends TiViewProxy
 
 	// Handle creation options
 	@Override
-	public void handleCreationDict(KrollDict options)
-	{
+	public void handleCreationDict(KrollDict options) {
 		super.handleCreationDict(options);
 
 		if (options.containsKey("message")) {
-			Log.d(LCAT, "example created with message: " + options.get("message"));
+			Log.d(LCAT,
+					"example created with message: " + options.get("message"));
 		}
 	}
 
 	// Methods
 	@Kroll.method
-	public void printMessage(String message)
-	{
+	public void printMessage(String message) {
 		Log.d(LCAT, "printing message: " + message);
 	}
 
-
-	@Kroll.getProperty @Kroll.method
-	public String getMessage()
-	{
-        return "Hello World from my module";
+	@Kroll.getProperty
+	@Kroll.method
+	public String getMessage() {
+		return "Hello World from my module";
 	}
 
-	@Kroll.setProperty @Kroll.method
-	public void setMessage(String message)
-	{
-	    Log.d(LCAT, "Tried setting module message to: " + message);
+	@Kroll.setProperty
+	@Kroll.method
+	public void setMessage(String message) {
+		Log.d(LCAT, "Tried setting module message to: " + message);
 	}
 }

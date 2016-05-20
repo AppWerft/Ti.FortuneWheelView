@@ -17,7 +17,7 @@ import org.appcelerator.kroll.common.TiConfig;
 
 
 @Kroll.module(name="Wheel", id="de.appwerft.fortunewheelview")
-public class WheelModule extends KrollModule
+public class WheelViewModule extends KrollModule
 {
 
 	// Standard Debugging variables
@@ -27,7 +27,7 @@ public class WheelModule extends KrollModule
 	// You can define constants with @Kroll.constant, for example:
 	// @Kroll.constant public static final String EXTERNAL_NAME = value;
 
-	public WheelModule()
+	public WheelViewModule()
 	{
 		super();
 	}
