@@ -23,12 +23,19 @@ import org.appcelerator.titanium.view.TiUIView;
 
 import android.app.Activity;
 
+import  	java.util.ArrayList;
+import  	java.util.HashMap;
+
+
 // This proxy can be created by calling Wheel.createExample({message: "hello world"})
 @Kroll.proxy(creatableInModule = WheelViewModule.class)
 public class WheelViewProxy extends TiViewProxy {
 	// Standard Debugging variables
 	private static final String LCAT = "WheelView";
-
+	public WheelView mView;
+	public String[] icons;
+	public HashMap<String,Object> options;
+	
 	// Constructor
 	public WheelViewProxy() {
 		super();
@@ -36,36 +43,24 @@ public class WheelViewProxy extends TiViewProxy {
 
 	@Override
 	public TiUIView createView(Activity activity) {
-		TiUIView view = new WheelView(this);
-		view.getLayoutParams().autoFillsHeight = true;
-		view.getLayoutParams().autoFillsWidth = true;
-		return view;
+		mView = new WheelView(this);
+		mView.getLayoutParams().autoFillsHeight = true;
+		mView.getLayoutParams().autoFillsWidth = true;
+		mView.addWheel(icons,options);
+		return mView;
 	}
 
 	// Handle creation options
 	@Override
-	public void handleCreationDict(KrollDict options) {
-		super.handleCreationDict(options);
-		if (options.containsKey("images")) {
-			
+	public void handleCreationDict(KrollDict args) {
+		super.handleCreationDict(args);
+		if (args.containsKey("icons")) {
+			icons = args.getStringArray("icons");
 		}
+		if (args.containsKey("options")) {
+			options = args.getKrollDict("options");
+		}
+		
 	}
-
-	// Methods
-	@Kroll.method
-	public void printMessage(String message) {
-		Log.d(LCAT, "printing message: " + message);
-	}
-
-	@Kroll.getProperty
-	@Kroll.method
-	public String getMessage() {
-		return "Hello World from my module";
-	}
-
-	@Kroll.setProperty
-	@Kroll.method
-	public void setMessage(String message) {
-		Log.d(LCAT, "Tried setting module message to: " + message);
-	}
+	
 }
