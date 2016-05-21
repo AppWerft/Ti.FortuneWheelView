@@ -14,7 +14,6 @@ public class WheelView extends TiUIView {
 			setNativeView(new TiCompositeLayout(proxy.getActivity(),
 					arrangement));
 		}
-
 		@Override
 		public void processProperties(KrollDict d) {
 			super.processProperties(d);
