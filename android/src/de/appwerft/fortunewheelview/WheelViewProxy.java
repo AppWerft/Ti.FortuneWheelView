@@ -9,33 +9,21 @@
 package de.appwerft.fortunewheelview;
 
 import org.appcelerator.kroll.KrollDict;
-import org.appcelerator.kroll.KrollProxy;
-import org.appcelerator.kroll.common.Log;
-
 import org.appcelerator.kroll.annotations.Kroll;
-import org.appcelerator.titanium.TiC;
-
-import org.appcelerator.titanium.util.TiConvert;
 import org.appcelerator.titanium.proxy.TiViewProxy;
-import org.appcelerator.titanium.view.TiCompositeLayout;
-import org.appcelerator.titanium.view.TiCompositeLayout.LayoutArrangement;
 import org.appcelerator.titanium.view.TiUIView;
-
 import android.app.Activity;
-
-import  	java.util.ArrayList;
-import  	java.util.HashMap;
-
+import java.util.HashMap;
 
 // This proxy can be created by calling Wheel.createExample({message: "hello world"})
 @Kroll.proxy(creatableInModule = WheelViewModule.class)
 public class WheelViewProxy extends TiViewProxy {
 	// Standard Debugging variables
-	private static final String LCAT = "WheelView";
+	public static final String LCAT = "WheelView";
 	public WheelView mView;
 	public String[] icons;
-	public HashMap<String,Object> options;
-	
+	public HashMap<String, Object> options;
+
 	// Constructor
 	public WheelViewProxy() {
 		super();
@@ -46,7 +34,7 @@ public class WheelViewProxy extends TiViewProxy {
 		mView = new WheelView(this);
 		mView.getLayoutParams().autoFillsHeight = true;
 		mView.getLayoutParams().autoFillsWidth = true;
-		mView.addWheel(icons,options);
+		mView.addWheel(icons, options);
 		return mView;
 	}
 
@@ -54,13 +42,28 @@ public class WheelViewProxy extends TiViewProxy {
 	@Override
 	public void handleCreationDict(KrollDict args) {
 		super.handleCreationDict(args);
+		HashMap<String, Object> attr = new HashMap<String, Object>();
 		if (args.containsKey("icons")) {
 			icons = args.getStringArray("icons");
 		}
 		if (args.containsKey("options")) {
 			options = args.getKrollDict("options");
+			attr.put("spinSensitivity",
+					options.getOrDefault("spinSensitivity", 1f));
+			attr.put("frameRate", options.getOrDefault("frameRate", 40));
+			attr.put("friction", options.getOrDefault("friction", 5));
+			attr.put("velocityClamp", options.getOrDefault("velocityClamp", 15));
+			attr.put("flingable", options.getOrDefault("flingable", true));
+			attr.put("grooves", options.getOrDefault("grooves", true));
+			attr.put("notch", options.getOrDefault("notch", 90));
+			attr.put("unselectScaleOffset",
+					options.getOrDefault("unselectScaleOffset", .8f));
+			attr.put("selectScaleOffset",
+					options.getOrDefault("selectScaleOffset", 1));
+			attr.put("distanceScale", options.getOrDefault("distanceScale", 1));
+			attr.put("centripetalPercent",
+					options.getOrDefault("centripetalPercent", .25f));
+			attr.put(" minimumSize", options.getOrDefault(" minimumSize", .1f));
 		}
-		
 	}
-	
 }
