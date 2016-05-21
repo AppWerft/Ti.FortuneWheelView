@@ -1,6 +1,7 @@
 package com.myriadmobile.fortune;
 
 import android.content.Context;
+import de.appwerft.helpers.*;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -21,7 +22,7 @@ import java.util.List;
  */
 public class FortuneView extends View implements RedrawListener{
 
-    private ArrayList<FortuneItem> fortuneItems = new ArrayList<>();
+    private ArrayList<FortuneItem> fortuneItems = new ArrayList<FortuneItem>();
 
     double radius;
     GrooveListener grooveListener;
@@ -51,33 +52,33 @@ public class FortuneView extends View implements RedrawListener{
 
     public FortuneView(Context context, AttributeSet attrs) {
         super(context, attrs);
-
         TypedArray a = context.getTheme().obtainStyledAttributes(
                 attrs,
-                R.styleable.FortuneView,
-                0, 0);
+                RHelper.getResourceDeclareStyleableIntArray(context,
+        				"FortuneView")
+                ,0, 0);
 
         try {
-            spinSensitivity = a.getFloat(R.styleable.FortuneView_spinSensitivity, 1);
-            frameRate = a.getInteger(R.styleable.FortuneView_frameRate, 40);
-            friction = a.getFloat(R.styleable.FortuneView_friction, 5);
-            velocityClamp = a.getFloat(R.styleable.FortuneView_velocityClamp, 15);
-            flingable = a.getBoolean(R.styleable.FortuneView_flingable, true);
-            grooves = a.getBoolean(R.styleable.FortuneView_grooves, true);
-            unselectScaleOffset = a.getFloat(R.styleable.FortuneView_unselectScaleOffset, 1f);
-            selectScaleOffset = a.getFloat(R.styleable.FortuneView_selectScaleOffset, 1f);
-            notch = a.getInteger(R.styleable.FortuneView_notch, 90);
-            distanceScale = a.getFloat(R.styleable.FortuneView_distanceScale, 1);
-            centripetalPercent = a.getFloat(R.styleable.FortuneView_centripetalPercent, 0f);
-            backgroundResourceId = a.getResourceId(R.styleable.FortuneView_background, -1);
-            if(a.getInteger(R.styleable.FortuneView_backgroundHinge, 0) == 0) {
+            spinSensitivity = a.getFloat(RHelper.getResource("styleable","FortuneView_spinSensitivity"), 1);
+            frameRate = a.getInteger(RHelper.getResource("styleable","FortuneView_frameRate"), 40);
+            friction = a.getFloat(RHelper.getResource("styleable","FortuneView_friction"), 5);
+            velocityClamp = a.getFloat(RHelper.getResource("styleable","FortuneView_velocityClamp"), 15);
+            flingable = a.getBoolean(RHelper.getResource("styleable","FortuneView_flingable"), true);
+            grooves = a.getBoolean(RHelper.getResource("styleable","FortuneView_grooves"), true);
+            unselectScaleOffset = a.getFloat(RHelper.getResource("styleable","FortuneView_unselectScaleOffset"), 1f);
+            selectScaleOffset = a.getFloat(RHelper.getResource("styleable","FortuneView_selectScaleOffset"), 1f);
+            notch = a.getInteger(RHelper.getResource("styleable","FortuneView_notch"), 90);
+            distanceScale = a.getFloat(RHelper.getResource("styleable","FortuneView_distanceScale"), 1);
+            centripetalPercent = a.getFloat(RHelper.getResource("styleable","FortuneView_centripetalPercent"), 0f);
+            backgroundResourceId = a.getResourceId(RHelper.getResource("styleable","FortuneView_background"), -1);
+            if(a.getInteger(RHelper.getResource("styleable","FortuneView_backgroundHinge"), 0) == 0) {
                 backgroundHinge = FortuneItem.HingeType.Fixed;
             } else {
                 backgroundHinge = FortuneItem.HingeType.Hinged;
             }
-            backgroundScale = a.getFloat(R.styleable.FortuneView_backgroundScale, 1);
-            backgroundCentripetalForce = a.getBoolean(R.styleable.FortuneView_backgroundCentripetalForce, false);
-            minimumSize = a.getFloat(R.styleable.FortuneView_minimumSize, .5f);
+            backgroundScale = a.getFloat(RHelper.getResource("styleable","FortuneView_backgroundScale"), 1);
+            backgroundCentripetalForce = a.getBoolean(RHelper.getResource("styleable","FortuneView_backgroundCentripetalForce"), false);
+            minimumSize = a.getFloat(RHelper.getResource("styleable","FortuneView_minimumSize"), .5f);
         } finally {
             a.recycle();
         }

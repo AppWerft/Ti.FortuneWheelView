@@ -10,10 +10,11 @@ package de.appwerft.fortunewheelview;
 
 import org.appcelerator.kroll.KrollDict;
 import org.appcelerator.kroll.KrollProxy;
+import org.appcelerator.kroll.common.Log;
+
 import org.appcelerator.kroll.annotations.Kroll;
 import org.appcelerator.titanium.TiC;
-import org.appcelerator.titanium.util.Log;
-import org.appcelerator.titanium.util.TiConfig;
+
 import org.appcelerator.titanium.util.TiConvert;
 import org.appcelerator.titanium.proxy.TiViewProxy;
 import org.appcelerator.titanium.view.TiCompositeLayout;
@@ -26,32 +27,7 @@ import android.app.Activity;
 @Kroll.proxy(creatableInModule = WheelViewModule.class)
 public class WheelViewProxy extends TiViewProxy {
 	// Standard Debugging variables
-	private static final String LCAT = "ExampleProxy";
-	private static final boolean DBG = TiConfig.LOGD;
-
-	private class ExampleView extends TiUIView {
-		public ExampleView(TiViewProxy proxy) {
-			super(proxy);
-			LayoutArrangement arrangement = LayoutArrangement.DEFAULT;
-
-			if (proxy.hasProperty(TiC.PROPERTY_LAYOUT)) {
-				String layoutProperty = TiConvert.toString(proxy
-						.getProperty(TiC.PROPERTY_LAYOUT));
-				if (layoutProperty.equals(TiC.LAYOUT_HORIZONTAL)) {
-					arrangement = LayoutArrangement.HORIZONTAL;
-				} else if (layoutProperty.equals(TiC.LAYOUT_VERTICAL)) {
-					arrangement = LayoutArrangement.VERTICAL;
-				}
-			}
-			setNativeView(new TiCompositeLayout(proxy.getActivity(),
-					arrangement));
-		}
-
-		@Override
-		public void processProperties(KrollDict d) {
-			super.processProperties(d);
-		}
-	}
+	private static final String LCAT = "WheelView";
 
 	// Constructor
 	public WheelViewProxy() {
@@ -60,7 +36,7 @@ public class WheelViewProxy extends TiViewProxy {
 
 	@Override
 	public TiUIView createView(Activity activity) {
-		TiUIView view = new ExampleView(this);
+		TiUIView view = new WheelView(this);
 		view.getLayoutParams().autoFillsHeight = true;
 		view.getLayoutParams().autoFillsWidth = true;
 		return view;
@@ -70,10 +46,8 @@ public class WheelViewProxy extends TiViewProxy {
 	@Override
 	public void handleCreationDict(KrollDict options) {
 		super.handleCreationDict(options);
-
-		if (options.containsKey("message")) {
-			Log.d(LCAT,
-					"example created with message: " + options.get("message"));
+		if (options.containsKey("images")) {
+			
 		}
 	}
 

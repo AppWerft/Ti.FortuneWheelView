@@ -13,7 +13,7 @@ win.add(label);
 win.open();
 
 // TODO: write your module tests here
-var wheel = require('de.appwerft.furtunewheel');
+var wheel = require('de.appwerft.fortunewheel');
 Ti.API.info("module is => " + wheel);
 
 label.text = wheel.example();
