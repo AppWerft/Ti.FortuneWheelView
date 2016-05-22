@@ -1,8 +1,6 @@
 package com.myriadmobile.fortune;
 
 import android.content.Context;
-import de.appwerft.helpers.*;
-import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;

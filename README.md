@@ -5,7 +5,7 @@ This is a Titanium Mobile module project, that wrappes the project https://githu
 
 ![](https://github.com/myriadmobile/fortune/raw/master/res/screenshot.png)
 
-It is still in progress …
+It is still in progress …   
 
 Usage
 -----
