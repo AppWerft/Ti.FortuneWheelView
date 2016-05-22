@@ -218,10 +218,13 @@ public class WheelViewProxy extends TiViewProxy {
 				}
 			};
 			Log.d(LCAT, "attrs"); // last "living" code
-			fortuneView = new FortuneView(proxy.getActivity(), attrs);// this  kills
+			
+			fortuneView = new FortuneView(proxy.getActivity());// this  kills
+			
 			ArrayList<FortuneItem> dis = new ArrayList<FortuneItem>();
 			for (int i = 0; i < icons.length; i++) {
 				String icon = icons[i];
+				Log.d(LCAT, icon); 
 				dis.add(new FortuneItem(AHelper.loadBitmapFromNativePath(icon)));
 			}
 			container.addView(fortuneView);

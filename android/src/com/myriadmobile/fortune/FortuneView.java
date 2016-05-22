@@ -14,6 +14,7 @@ import com.myriadmobile.fortune.paths.CustomWheelPath;
 
 import java.util.ArrayList;
 import java.util.List;
+import android.graphics.BitmapFactory;
 
 /**
  * Created by cclose on 9/3/14.
@@ -57,63 +58,14 @@ public class FortuneView extends View implements RedrawListener {
 
 	public FortuneView(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		/* ORIGINAL
-		TypedArray a = context.getTheme().obtainStyledAttributes(
-				attrs,
-				RHelper.getResourceDeclareStyleableIntArray(context,
-						"FortuneView"), 0, 0);
-
-		try {
-			spinSensitivity = a.getFloat(RHelper.getResource("styleable",
-					"FortuneView_spinSensitivity"), 1);
-			frameRate = a.getInteger(
-					RHelper.getResource("styleable", "FortuneView_frameRate"),
-					40);
-			friction = a
-					.getFloat(RHelper.getResource("styleable",
-							"FortuneView_friction"), 5);
-			velocityClamp = a.getFloat(RHelper.getResource("styleable",
-					"FortuneView_velocityClamp"), 15);
-			flingable = a.getBoolean(
-					RHelper.getResource("styleable", "FortuneView_flingable"),
-					true);
-			grooves = a.getBoolean(
-					RHelper.getResource("styleable", "FortuneView_grooves"),
-					true);
-			unselectScaleOffset = a.getFloat(RHelper.getResource("styleable",
-					"FortuneView_unselectScaleOffset"), 1f);
-			selectScaleOffset = a.getFloat(RHelper.getResource("styleable",
-					"FortuneView_selectScaleOffset"), 1f);
-			notch = a.getInteger(
-					RHelper.getResource("styleable", "FortuneView_notch"), 90);
-			distanceScale = a.getFloat(RHelper.getResource("styleable",
-					"FortuneView_distanceScale"), 1);
-			centripetalPercent = a.getFloat(RHelper.getResource("styleable",
-					"FortuneView_centripetalPercent"), 0f);
-			backgroundResourceId = a.getResourceId(
-					RHelper.getResource("styleable", "FortuneView_background"),
-					-1);
-			if (a.getInteger(RHelper.getResource("styleable",
-					"FortuneView_backgroundHinge"), 0) == 0) {
-				backgroundHinge = FortuneItem.HingeType.Fixed;
-			} else {
-				backgroundHinge = FortuneItem.HingeType.Hinged;
-			}
-			backgroundScale = a.getFloat(RHelper.getResource("styleable",
-					"FortuneView_backgroundScale"), 1);
-			backgroundCentripetalForce = a.getBoolean(RHelper.getResource(
-					"styleable", "FortuneView_backgroundCentripetalForce"),
-					false);
-			minimumSize = a
-					.getFloat(RHelper.getResource("styleable",
-							"FortuneView_minimumSize"), .5f);
-		} finally {
-			a.recycle();
-		}*/
 		swipeController = new SwipeController(this, velocityClamp, friction,
 				frameRate, grooves, flingable, spinSensitivity);
 	}
-
+	public FortuneView(Context context) {
+		super(context);
+		swipeController = new SwipeController(this, velocityClamp, friction,
+				frameRate, grooves, flingable, spinSensitivity);
+	}
 	public void setGrooveListener(GrooveListener grooveListener) {
 		this.grooveListener = grooveListener;
 	}

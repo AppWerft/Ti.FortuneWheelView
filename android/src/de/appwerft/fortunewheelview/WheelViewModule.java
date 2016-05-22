@@ -18,6 +18,7 @@ import org.appcelerator.kroll.common.TiConfig;
 @Kroll.module(name = "Wheel", id = "de.appwerft.fortunewheelview")
 public class WheelViewModule extends KrollModule {
 	private static final String LCAT = "WheelModule";
+
 	public WheelViewModule() {
 		super();
 	}
