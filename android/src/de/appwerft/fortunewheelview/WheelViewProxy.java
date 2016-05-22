@@ -22,7 +22,8 @@ public class WheelViewProxy extends TiViewProxy {
 	public static final String LCAT = "WheelView";
 	public WheelView mView;
 	public String[] icons;
-	public HashMap<String, Object> options;
+
+	public HashMap<String, Object> attr = new HashMap<String, Object>();
 
 	// Constructor
 	public WheelViewProxy() {
@@ -34,7 +35,7 @@ public class WheelViewProxy extends TiViewProxy {
 		mView = new WheelView(this);
 		mView.getLayoutParams().autoFillsHeight = true;
 		mView.getLayoutParams().autoFillsWidth = true;
-		mView.addWheel(icons, options);
+		mView.addWheel(icons,attr);
 		return mView;
 	}
 
@@ -42,11 +43,11 @@ public class WheelViewProxy extends TiViewProxy {
 	@Override
 	public void handleCreationDict(KrollDict args) {
 		super.handleCreationDict(args);
-		HashMap<String, Object> attr = new HashMap<String, Object>();
 		if (args.containsKey("icons")) {
 			icons = args.getStringArray("icons");
 		}
 		if (args.containsKey("options")) {
+			final HashMap<String, Object> options;
 			options = args.getKrollDict("options");
 			attr.put("spinSensitivity",
 					options.getOrDefault("spinSensitivity", 1f));
