@@ -16,6 +16,8 @@ import org.appcelerator.titanium.proxy.TiViewProxy;
 import org.appcelerator.titanium.view.TiUIView;
 
 import com.myriadmobile.fortune.FortuneView;
+import com.myriadmobile.fortune.FortuneItem;
+
 
 import android.app.Activity;
 import android.util.AttributeSet;
@@ -23,6 +25,9 @@ import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 
 import java.util.HashMap;
+import java.util.ArrayList;
+import org.appcelerator.titanium.util.TiUIHelper;
+
 
 // This proxy can be created by calling Wheel.createExample({message: "hello world"})
 @Kroll.proxy(creatableInModule = WheelViewModule.class)
@@ -41,10 +46,11 @@ public class WheelViewProxy extends TiViewProxy {
 
 	@Override
 	public TiUIView createView(Activity activity) {
+
 		mView = new WheelView(this);
 		mView.getLayoutParams().autoFillsHeight = true;
 		mView.getLayoutParams().autoFillsWidth = true;
-		mView.addWheel(icons,attrs);
+		// mView.addWheel(icons,attrs);
 		return mView;
 	}
 
@@ -62,7 +68,8 @@ public class WheelViewProxy extends TiViewProxy {
 					options.getOrDefault("spinSensitivity", 1f));
 			attrs.put("frameRate", options.getOrDefault("frameRate", 40));
 			attrs.put("friction", options.getOrDefault("friction", 5));
-			attrs.put("velocityClamp", options.getOrDefault("velocityClamp", 15));
+			attrs.put("velocityClamp",
+					options.getOrDefault("velocityClamp", 15));
 			attrs.put("flingable", options.getOrDefault("flingable", true));
 			attrs.put("grooves", options.getOrDefault("grooves", true));
 			attrs.put("notch", options.getOrDefault("notch", 90));
@@ -76,8 +83,7 @@ public class WheelViewProxy extends TiViewProxy {
 			attrs.put(" minimumSize", options.getOrDefault(" minimumSize", .1f));
 		}
 	}
-	
-	
+
 	private class WheelView extends TiUIView {
 		FortuneView wheelView;
 
@@ -138,8 +144,8 @@ public class WheelViewProxy extends TiViewProxy {
 				}
 
 				@Override
-				public int getAttributeIntValue(String namespace, String attribute,
-						int defaultValue) {
+				public int getAttributeIntValue(String namespace,
+						String attribute, int defaultValue) {
 					return 0;
 				}
 
@@ -178,12 +184,14 @@ public class WheelViewProxy extends TiViewProxy {
 				}
 
 				@Override
-				public int getAttributeUnsignedIntValue(int index, int defaultValue) {
+				public int getAttributeUnsignedIntValue(int index,
+						int defaultValue) {
 					return 0;
 				}
 
 				@Override
-				public float getAttributeFloatValue(int index, float defaultValue) {
+				public float getAttributeFloatValue(int index,
+						float defaultValue) {
 					return 0;
 				}
 
@@ -208,19 +216,25 @@ public class WheelViewProxy extends TiViewProxy {
 				}
 			};
 			wheelView = new FortuneView(proxy.getActivity(), attrs);
+			
+			ArrayList<FortuneItem> dis = new ArrayList<FortuneItem>();
+			
+			for (int i=0;i<icons.length;i++) {
+				String icon= icons[i];
+				 dis.add(new FortuneItem(TiUIHelper.getResourceBitmap(icon)));
+			}
+			
+			
 			container.addView(wheelView);
 			setNativeView(container);
 		}
 
-		void addWheel(String[] icons, HashMap<String, Object> options) {
-
-		};
+		// void addWheel(String[] icons, HashMap<String, Object> options) {};
 
 		@Override
 		public void processProperties(KrollDict d) {
 			super.processProperties(d);
 		}
 	}
-	
-	
+
 }

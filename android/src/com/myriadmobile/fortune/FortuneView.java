@@ -57,7 +57,7 @@ public class FortuneView extends View implements RedrawListener {
 
 	public FortuneView(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		/*
+		/* ORIGINAL
 		TypedArray a = context.getTheme().obtainStyledAttributes(
 				attrs,
 				RHelper.getResourceDeclareStyleableIntArray(context,
