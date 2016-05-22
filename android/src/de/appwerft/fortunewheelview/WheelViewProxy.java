@@ -18,7 +18,6 @@ import org.appcelerator.titanium.view.TiUIView;
 import com.myriadmobile.fortune.FortuneView;
 import com.myriadmobile.fortune.FortuneItem;
 
-
 import android.app.Activity;
 import android.util.AttributeSet;
 import android.widget.LinearLayout;
@@ -26,14 +25,16 @@ import android.widget.LinearLayout.LayoutParams;
 
 import java.util.HashMap;
 import java.util.ArrayList;
-import org.appcelerator.titanium.util.TiUIHelper;
 
+import de.appwerft.helpers.*;
+import com.myriadmobile.fortune.*;
 
 // This proxy can be created by calling Wheel.createExample({message: "hello world"})
 @Kroll.proxy(creatableInModule = WheelViewModule.class)
 public class WheelViewProxy extends TiViewProxy {
 	// Standard Debugging variables
 	public static final String LCAT = "WheelView";
+
 	public WheelView mView;
 	public String[] icons;
 
@@ -42,11 +43,12 @@ public class WheelViewProxy extends TiViewProxy {
 	// Constructor
 	public WheelViewProxy() {
 		super();
+		Log.d(LCAT, "WheelViewProxy");
 	}
 
 	@Override
 	public TiUIView createView(Activity activity) {
-
+		Log.d(LCAT, "createView");
 		mView = new WheelView(this);
 		mView.getLayoutParams().autoFillsHeight = true;
 		mView.getLayoutParams().autoFillsWidth = true;
@@ -58,6 +60,7 @@ public class WheelViewProxy extends TiViewProxy {
 	@Override
 	public void handleCreationDict(KrollDict args) {
 		super.handleCreationDict(args);
+		Log.d(LCAT, "handleCreationDict");
 		if (args.containsKey("icons")) {
 			icons = args.getStringArray("icons");
 		}
@@ -85,11 +88,10 @@ public class WheelViewProxy extends TiViewProxy {
 	}
 
 	private class WheelView extends TiUIView {
-		FortuneView wheelView;
+		FortuneView fortuneView;
 
 		WheelView(TiViewProxy proxy) {
 			super(proxy);
-			Log.d("WheelView", attrs.toString());
 			LayoutParams lp = new LayoutParams(LayoutParams.WRAP_CONTENT,
 					LayoutParams.WRAP_CONTENT);
 			LinearLayout container = new LinearLayout(proxy.getActivity());
@@ -215,17 +217,14 @@ public class WheelViewProxy extends TiViewProxy {
 					return 0;
 				}
 			};
-			wheelView = new FortuneView(proxy.getActivity(), attrs);
-			
+			Log.d(LCAT, "attrs"); // last "living" code
+			fortuneView = new FortuneView(proxy.getActivity(), attrs);// this  kills
 			ArrayList<FortuneItem> dis = new ArrayList<FortuneItem>();
-			
-			for (int i=0;i<icons.length;i++) {
-				String icon= icons[i];
-				 dis.add(new FortuneItem(TiUIHelper.getResourceBitmap(icon)));
+			for (int i = 0; i < icons.length; i++) {
+				String icon = icons[i];
+				dis.add(new FortuneItem(AHelper.loadBitmapFromNativePath(icon)));
 			}
-			
-			
-			container.addView(wheelView);
+			container.addView(fortuneView);
 			setNativeView(container);
 		}
 

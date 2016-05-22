@@ -2,7 +2,7 @@
 # this is your module manifest and used by Titanium
 # during compilation, packaging, distribution, etc.
 #
-version: 1.0.0
+version: 1.0.1
 apiversion: 2
 architectures: armeabi armeabi-v7a x86
 description: Ti.FortuneWheelView
@@ -11,7 +11,7 @@ license: Specify your license
 copyright: Copyright (c) 2016 by 
 
 # these should not be edited
-name: FortuneWheelView
+name: fortunewheelview
 moduleid: de.appwerft.fortunewheelview
 guid: 7f92a950-4ca4-467a-8f75-f35e951e2681
 platform: android

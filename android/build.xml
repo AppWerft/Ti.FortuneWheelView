@@ -1,4 +1,4 @@
-<project name="wheelview" default="dist">
+<project name="fortunewheelview" default="dist">
 	<description>
 		Ant build script for Titanium Android module wheel
 	</description>
