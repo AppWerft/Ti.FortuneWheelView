@@ -8,13 +8,19 @@
  */
 package de.appwerft.fortunewheelview;
 
+import java.io.IOException;
 import org.appcelerator.kroll.KrollDict;
 import org.appcelerator.kroll.common.Log;
 import org.appcelerator.kroll.annotations.Kroll;
 import org.appcelerator.kroll.common.Log;
 import org.appcelerator.titanium.proxy.TiViewProxy;
+import org.appcelerator.titanium.io.TiFileFactory;
+import org.appcelerator.titanium.io.TiBaseFile;
+import org.appcelerator.titanium.util.TiUIHelper;
 import org.appcelerator.titanium.view.TiUIView;
-
+import org.appcelerator.titanium.view.TiDrawableReference;
+import org.appcelerator.titanium.proxy.TiViewProxy;
+import org.appcelerator.titanium.TiBlob;
 import com.myriadmobile.fortune.FortuneView;
 import com.myriadmobile.fortune.FortuneItem;
 
@@ -26,7 +32,14 @@ import android.widget.LinearLayout.LayoutParams;
 import java.util.HashMap;
 import java.util.ArrayList;
 
+import android.app.Activity;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.PointF;
+import android.os.Message;
+
 import de.appwerft.helpers.*;
+
 import com.myriadmobile.fortune.*;
 
 // This proxy can be created by calling Wheel.createExample({message: "hello world"})
@@ -60,9 +73,10 @@ public class WheelViewProxy extends TiViewProxy {
 	@Override
 	public void handleCreationDict(KrollDict args) {
 		super.handleCreationDict(args);
-		Log.d(LCAT, "handleCreationDict");
+		Log.d(LCAT, "handleCreationDict ≠≠≠≠≠≠≠≠≠≠≠≠≠≠≠≠≠≠");
 		if (args.containsKey("icons")) {
 			icons = args.getStringArray("icons");
+			Log.d(LCAT, icons.toString());
 		}
 		if (args.containsKey("options")) {
 			final HashMap<String, Object> options;
@@ -90,142 +104,16 @@ public class WheelViewProxy extends TiViewProxy {
 	private class WheelView extends TiUIView {
 		FortuneView fortuneView;
 
-		WheelView(TiViewProxy proxy) {
+		WheelView(final TiViewProxy proxy) {
 			super(proxy);
 			LayoutParams lp = new LayoutParams(LayoutParams.WRAP_CONTENT,
 					LayoutParams.WRAP_CONTENT);
 			LinearLayout container = new LinearLayout(proxy.getActivity());
 			container.setLayoutParams(lp);
-			AttributeSet attrs = new AttributeSet() {
-				@Override
-				public int getAttributeCount() {
-					return 0;
-				}
-
-				@Override
-				public String getAttributeName(int index) {
-					return null;
-				}
-
-				@Override
-				public String getAttributeValue(int index) {
-					return null;
-				}
-
-				@Override
-				public String getAttributeValue(String namespace, String name) {
-					return null;
-				}
-
-				@Override
-				public String getPositionDescription() {
-					return null;
-				}
-
-				@Override
-				public int getAttributeNameResource(int index) {
-					return 0;
-				}
-
-				@Override
-				public int getAttributeListValue(String namespace,
-						String attribute, String[] options, int defaultValue) {
-					return 0;
-				}
-
-				@Override
-				public boolean getAttributeBooleanValue(String namespace,
-						String attribute, boolean defaultValue) {
-					return false;
-				}
-
-				@Override
-				public int getAttributeResourceValue(String namespace,
-						String attribute, int defaultValue) {
-					return 0;
-				}
-
-				@Override
-				public int getAttributeIntValue(String namespace,
-						String attribute, int defaultValue) {
-					return 0;
-				}
-
-				@Override
-				public int getAttributeUnsignedIntValue(String namespace,
-						String attribute, int defaultValue) {
-					return 0;
-				}
-
-				@Override
-				public float getAttributeFloatValue(String namespace,
-						String attribute, float defaultValue) {
-					return 0;
-				}
-
-				@Override
-				public int getAttributeListValue(int index, String[] options,
-						int defaultValue) {
-					return 0;
-				}
-
-				@Override
-				public boolean getAttributeBooleanValue(int index,
-						boolean defaultValue) {
-					return false;
-				}
-
-				@Override
-				public int getAttributeResourceValue(int index, int defaultValue) {
-					return 0;
-				}
-
-				@Override
-				public int getAttributeIntValue(int index, int defaultValue) {
-					return 0;
-				}
-
-				@Override
-				public int getAttributeUnsignedIntValue(int index,
-						int defaultValue) {
-					return 0;
-				}
-
-				@Override
-				public float getAttributeFloatValue(int index,
-						float defaultValue) {
-					return 0;
-				}
-
-				@Override
-				public String getIdAttribute() {
-					return null;
-				}
-
-				@Override
-				public String getClassAttribute() {
-					return null;
-				}
-
-				@Override
-				public int getIdAttributeResourceValue(int defaultValue) {
-					return 0;
-				}
-
-				@Override
-				public int getStyleAttribute() {
-					return 0;
-				}
-			};
-			Log.d(LCAT, "attrs"); // last "living" code
-			
-			fortuneView = new FortuneView(proxy.getActivity());// this  kills
-			
+			fortuneView = new FortuneView(proxy.getActivity());// this kills
 			ArrayList<FortuneItem> dis = new ArrayList<FortuneItem>();
 			for (int i = 0; i < icons.length; i++) {
-				String icon = icons[i];
-				Log.d(LCAT, icon); 
-				dis.add(new FortuneItem(AHelper.loadBitmapFromNativePath(icon)));
+				dis.add(new FortuneItem(getBitmapFromImage(icons[i])));
 			}
 			container.addView(fortuneView);
 			setNativeView(container);
@@ -236,6 +124,32 @@ public class WheelViewProxy extends TiViewProxy {
 		@Override
 		public void processProperties(KrollDict d) {
 			super.processProperties(d);
+		}
+
+		private Bitmap getBitmapFromImage(Object val) {
+			if (val instanceof TiBlob) {
+				// this is a blob, parse accordingly
+				TiBlob imgBlob = (TiBlob) val;
+				TiDrawableReference ref = TiDrawableReference.fromBlob(
+						proxy.getActivity(), imgBlob);
+				return ref.getBitmap();
+			} else {
+				String imgValue = (String) val;
+				return loadImageFromApplication(imgValue);
+			}
+		}
+
+		private Bitmap loadImageFromApplication(String imageName) {
+			Bitmap result = null;
+			try {
+				String url = resolveUrl(null,imageName);
+				TiBaseFile file = TiFileFactory.createTitaniumFile(
+						new String[] { url }, false);
+				result = TiUIHelper.createBitmap(file.getInputStream());
+			} catch (IOException e) {
+				Log.e(LCAT, " WheelView only supports local image files");
+			}
+			return result;
 		}
 	}
 
