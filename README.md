@@ -33,7 +33,14 @@ var wheelView = Module.createWheelView({
     }
 });
 
-wheelView.addEventListener('change',changehandler);
+wheelView.addEventListener('groovechanged',function(){
+    console.log(arguments[0].index);
+});
+
+wheelView.setSelectedItem(2);
+wheelView.getSelectedIndex();
+wheelView.getSelectedIndex();
+
 
 ~~~
 

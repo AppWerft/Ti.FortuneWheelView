@@ -9,6 +9,7 @@
 package de.appwerft.fortunewheelview;
 
 import java.io.IOException;
+
 import org.appcelerator.kroll.KrollDict;
 import org.appcelerator.kroll.common.Log;
 import org.appcelerator.kroll.annotations.Kroll;
@@ -21,8 +22,10 @@ import org.appcelerator.titanium.view.TiUIView;
 import org.appcelerator.titanium.view.TiDrawableReference;
 import org.appcelerator.titanium.proxy.TiViewProxy;
 import org.appcelerator.titanium.TiBlob;
+
 import com.myriadmobile.fortune.FortuneView;
 import com.myriadmobile.fortune.FortuneItem;
+import com.myriadmobile.fortune.GrooveListener;
 
 import android.app.Activity;
 import android.util.AttributeSet;
@@ -37,8 +40,11 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.PointF;
 import android.os.Message;
-
 import de.appwerft.helpers.*;
+
+import com.myriadmobile.fortune.paths.CircleWheelPath;
+import com.myriadmobile.fortune.paths.CustomWheelPath;
+
 
 import com.myriadmobile.fortune.*;
 
@@ -65,7 +71,6 @@ public class WheelViewProxy extends TiViewProxy {
 		mView = new WheelView(this);
 		mView.getLayoutParams().autoFillsHeight = true;
 		mView.getLayoutParams().autoFillsWidth = true;
-		// mView.addWheel(icons,attrs);
 		return mView;
 	}
 	@Kroll.method
@@ -115,7 +120,6 @@ public class WheelViewProxy extends TiViewProxy {
 	}
 
 	private class WheelView extends TiUIView {
-		
 		WheelView(final TiViewProxy proxy) {
 			super(proxy);
 			LayoutParams lp = new LayoutParams(LayoutParams.WRAP_CONTENT,
@@ -129,6 +133,20 @@ public class WheelViewProxy extends TiViewProxy {
 			}	
 			fortuneView.addFortuneItems(list);
 			container.addView(fortuneView);
+			
+			GrooveListener grooveListener = new GrooveListener(){
+				@Override
+			    public void onGrooveChange(int index) {
+					if (proxy.hasListeners("groovechanged")) {
+						KrollDict payload = new KrollDict();
+						payload.put("index", index);
+						proxy.fireEvent("groovechanged", payload);
+					} else {
+						Log.e(LCAT, "cannot fireEvent 'ready' ");
+					}
+				}
+			}; 
+			fortuneView.setGrooveListener(grooveListener);
 			setNativeView(container);
 		}
 		@Override

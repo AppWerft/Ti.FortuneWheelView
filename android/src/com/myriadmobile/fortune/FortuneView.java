@@ -33,7 +33,7 @@ public class FortuneView extends View implements RedrawListener {
 	CustomWheelPath path = new CircleWheelPath();
 
 	// Default settings
-	private double spinSensitivity = 1; // Multipler for spin speed. ie .5, half
+	private double spinSensitivity = 0.8f; // Multipler for spin speed. ie .5, half
 										// the speed of finger
 	private int frameRate = 40; // Frames per second
 	private double friction = 5; // Slows down friction radians per second
@@ -41,7 +41,7 @@ public class FortuneView extends View implements RedrawListener {
 	private boolean flingable = true; // Decides if the user can fling
 	private boolean grooves = true; // Locks at correct angles
 	private int notch = 90; // Where the notch is located in degrees
-	private float unselectScaleOffset = .8f; // Scale offset of unselected icons
+	private float unselectScaleOffset = 1f; // Scale offset of unselected icons
 	private float selectScaleOffset = 1f; // Scale offset of the selected icons
 	private float distanceScale = 1; // Float from 0 - 1 (should be) to decide
 										// how close to the edge the icons show
@@ -163,7 +163,6 @@ public class FortuneView extends View implements RedrawListener {
 
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
-
 		if (mCanvas != null) {
 			if (swipeController.handleUserEvent(event, mCanvas.getWidth(),
 					mCanvas.getHeight()))
