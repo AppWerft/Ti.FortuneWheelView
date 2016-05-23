@@ -15,7 +15,10 @@ import com.myriadmobile.fortune.paths.CircleWheelPath;
 import com.myriadmobile.fortune.paths.CustomWheelPath;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import de.appwerft.fortunewheelview.*;
+import org.appcelerator.kroll.KrollDict;
 
 /**
  * Created by cclose on 9/3/14.
@@ -23,7 +26,7 @@ import java.util.List;
 public class FortuneView extends View implements RedrawListener {
 
 	private ArrayList<FortuneItem> fortuneItems = new ArrayList<FortuneItem>();
-
+	public static final String LCAT = "FortuneView";
 	double radius;
 	GrooveListener grooveListener;
 	int lastGrooveIndex = 0;
@@ -33,14 +36,15 @@ public class FortuneView extends View implements RedrawListener {
 	CustomWheelPath path = new CircleWheelPath();
 
 	// Default settings
-	private double spinSensitivity = 0.8f; // Multipler for spin speed. ie .5, half
-										// the speed of finger
-	private int frameRate = 40; // Frames per second
-	private double friction = 5; // Slows down friction radians per second
-	private double velocityClamp = 15; // clamps max fling to radians per second
-	private boolean flingable = true; // Decides if the user can fling
-	private boolean grooves = true; // Locks at correct angles
-	private int notch = 90; // Where the notch is located in degrees
+	private double spinSensitivity; // Multipler for spin speed. ie .5,
+									// half
+									// the speed of finger
+	private int frameRate; // Frames per second
+	private double friction; // Slows down friction radians per second
+	private double velocityClamp; // clamps max fling to radians per second
+	private boolean flingable; // Decides if the user can fling
+	private boolean grooves; // Locks at correct angles
+	private int notch; // Where the notch is located in degrees
 	private float unselectScaleOffset = 1f; // Scale offset of unselected icons
 	private float selectScaleOffset = 1f; // Scale offset of the selected icons
 	private float distanceScale = 1; // Float from 0 - 1 (should be) to decide
@@ -55,11 +59,30 @@ public class FortuneView extends View implements RedrawListener {
 														// background
 	public FortuneItem.HingeType backgroundHinge = FortuneItem.HingeType.Fixed; // Background
 	private float minimumSize = .5f; // Minimun size of a view
+
+	/* constructor */
 	public FortuneView(Context context) {
 		super(context);
+		/* now we need attributes from proxy ??? */
+		// Log.d(LCAT,WheelViewProxy.attributes.toString());
+
+	}
+
+	public void setOptions(KrollDict attributes) {
+		velocityClamp = attributes.getDouble("velocityClamp");
+		friction = attributes.getDouble("friction");
+		frameRate = attributes.getInt("frameRate");
+		grooves = attributes.getBoolean("grooves");
+		flingable = attributes.getBoolean("flingable");
+		notch = attributes.getInt("notch");
+		spinSensitivity = 1f;//attributes.getDouble("spinSensitivity");
+	}
+
+	public void initSwipeControler() {
 		swipeController = new SwipeController(this, velocityClamp, friction,
 				frameRate, grooves, flingable, spinSensitivity);
-	}
+	};
+
 	public void setGrooveListener(GrooveListener grooveListener) {
 		this.grooveListener = grooveListener;
 	}
@@ -150,7 +173,6 @@ public class FortuneView extends View implements RedrawListener {
 		// Notify Listener
 		if (getSelectedIndex() != lastGrooveIndex) {
 			lastGrooveIndex = getSelectedIndex();
-			 Log.d("Groove", "Change: " + lastGrooveIndex);
 			if (grooveListener != null)
 				grooveListener.onGrooveChange(lastGrooveIndex);
 		}

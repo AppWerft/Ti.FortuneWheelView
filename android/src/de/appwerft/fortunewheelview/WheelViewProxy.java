@@ -20,7 +20,6 @@ import org.appcelerator.titanium.io.TiBaseFile;
 import org.appcelerator.titanium.util.TiUIHelper;
 import org.appcelerator.titanium.view.TiUIView;
 import org.appcelerator.titanium.view.TiDrawableReference;
-import org.appcelerator.titanium.proxy.TiViewProxy;
 import org.appcelerator.titanium.TiBlob;
 
 import com.myriadmobile.fortune.FortuneView;
@@ -28,37 +27,24 @@ import com.myriadmobile.fortune.FortuneItem;
 import com.myriadmobile.fortune.GrooveListener;
 
 import android.app.Activity;
-import android.util.AttributeSet;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 
 import java.util.HashMap;
 import java.util.ArrayList;
 
-import android.app.Activity;
 import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.PointF;
-import android.os.Message;
-import de.appwerft.helpers.*;
 
-import com.myriadmobile.fortune.paths.CircleWheelPath;
-import com.myriadmobile.fortune.paths.CustomWheelPath;
-
-
-import com.myriadmobile.fortune.*;
-
-// This proxy can be created by calling Wheel.createExample({message: "hello world"})
 @Kroll.proxy(creatableInModule = WheelViewModule.class)
 public class WheelViewProxy extends TiViewProxy {
 	// Standard Debugging variables
 	public static final String LCAT = "WheelView";
 
-	public WheelView mView;
+	public TiUIWheelView mView;
 	public String[] icons;
-
-	public HashMap<String, Object> attrs = new HashMap<String, Object>();
+	public KrollDict attributes;
 	FortuneView fortuneView;
+
 	// Constructor
 	public WheelViewProxy() {
 		super();
@@ -67,76 +53,109 @@ public class WheelViewProxy extends TiViewProxy {
 
 	@Override
 	public TiUIView createView(Activity activity) {
-		Log.d(LCAT, "createView");
-		mView = new WheelView(this);
+		Log.d(LCAT, "createView inside ViewProxy ≠≠≠≠≠≠≠");
+		mView = new TiUIWheelView(this);
 		mView.getLayoutParams().autoFillsHeight = true;
 		mView.getLayoutParams().autoFillsWidth = true;
 		return mView;
 	}
+
 	@Kroll.method
 	public int getSelectedIndex() {
 		return fortuneView.getSelectedIndex();
 	}
+
 	@Kroll.method
 	public void setSelectedItem(int ndx) {
 		fortuneView.setSelectedItem(ndx);
 	}
-	
+
 	@Kroll.method
 	public int getTotalItems() {
 		return fortuneView.getTotalItems();
 	}
-	
+
 	// Handle creation options
 	@Override
 	public void handleCreationDict(KrollDict args) {
 		super.handleCreationDict(args);
-		Log.d(LCAT, "handleCreationDict ≠≠≠≠≠≠≠≠≠≠≠≠≠≠≠≠≠≠");
+		Log.d(LCAT, args.toString());
+		Log.d(LCAT, "handleCreationDict");
 		if (args.containsKey("icons")) {
 			icons = args.getStringArray("icons");
 			Log.d(LCAT, icons.toString());
 		}
+		KrollDict options = new KrollDict();
+		attributes = new KrollDict();
 		if (args.containsKey("options")) {
-			final HashMap<String, Object> options;
 			options = args.getKrollDict("options");
-			attrs.put("spinSensitivity",
+			attributes.put("spinSensitivity",
 					options.getOrDefault("spinSensitivity", 1f));
-			attrs.put("frameRate", options.getOrDefault("frameRate", 40));
-			attrs.put("friction", options.getOrDefault("friction", 5));
-			attrs.put("velocityClamp",
+			attributes.put("frameRate", options.getOrDefault("frameRate", 40));
+			attributes.put("friction", options.getOrDefault("friction", 5));
+			attributes.put("velocityClamp",
 					options.getOrDefault("velocityClamp", 15));
-			attrs.put("flingable", options.getOrDefault("flingable", true));
-			attrs.put("grooves", options.getOrDefault("grooves", true));
-			attrs.put("notch", options.getOrDefault("notch", 90));
-			attrs.put("unselectScaleOffset",
+			attributes
+					.put("flingable", options.getOrDefault("flingable", true));
+			attributes.put("grooves", options.getOrDefault("grooves", true));
+			attributes.put("notch", options.getOrDefault("notch", 90));
+			attributes.put("unselectScaleOffset",
 					options.getOrDefault("unselectScaleOffset", .8f));
-			attrs.put("selectScaleOffset",
+			attributes.put("selectScaleOffset",
 					options.getOrDefault("selectScaleOffset", 1));
-			attrs.put("distanceScale", options.getOrDefault("distanceScale", 1));
-			attrs.put("centripetalPercent",
+			attributes.put("distanceScale",
+					options.getOrDefault("distanceScale", 1));
+			attributes.put("centripetalPercent",
 					options.getOrDefault("centripetalPercent", .25f));
-			attrs.put(" minimumSize", options.getOrDefault(" minimumSize", .1f));
+			attributes.put("minimumSize",
+					options.getOrDefault("minimumSize", .1f));
+			attributes.put("distanceScale",
+					options.getOrDefault("distanceScale", 1f));
+			
+			
+		} else {
+			attributes.put("spinSensitivity", 1f);
+			attributes.put("frameRate", 40);
+			attributes.put("friction", 5);
+			attributes.put("velocityClamp", 15);
+			attributes.put("flingable", true);
+			attributes.put("grooves", true);
+			attributes.put("notch", 90);
+			attributes.put("unselectScaleOffset", .8f);
+			attributes.put("selectScaleOffset", 1);
+			attributes.put("distanceScale", 1);
+			attributes.put("centripetalPercent", .25f);
+			attributes.put("minimumSize", .1f);
+			attributes.put("distanceScale", .1f);
+			
 		}
 	}
 
-	private class WheelView extends TiUIView {
-		WheelView(final TiViewProxy proxy) {
+	private class TiUIWheelView extends TiUIView {
+		TiUIWheelView(final TiViewProxy proxy) {
 			super(proxy);
 			LayoutParams lp = new LayoutParams(LayoutParams.WRAP_CONTENT,
 					LayoutParams.WRAP_CONTENT);
 			LinearLayout container = new LinearLayout(proxy.getActivity());
 			container.setLayoutParams(lp);
+			// attributes are visible
+			Log.d(LCAT, "TiUIWheelView");
+			Log.d(LCAT, attributes.toString());
 			fortuneView = new FortuneView(proxy.getActivity());
+			fortuneView.setOptions(attributes);
+			fortuneView.initSwipeControler();
+
+			// adding of content into view:
 			ArrayList<FortuneItem> list = new ArrayList<FortuneItem>();
 			for (int i = 0; i < icons.length; i++) {
 				list.add(new FortuneItem(getBitmapFromImage(icons[i])));
-			}	
+			}
 			fortuneView.addFortuneItems(list);
 			container.addView(fortuneView);
-			
-			GrooveListener grooveListener = new GrooveListener(){
+			// initiating listener(s)
+			GrooveListener grooveListener = new GrooveListener() {
 				@Override
-			    public void onGrooveChange(int index) {
+				public void onGrooveChange(int index) {
 					if (proxy.hasListeners("groovechanged")) {
 						KrollDict payload = new KrollDict();
 						payload.put("index", index);
@@ -145,10 +164,11 @@ public class WheelViewProxy extends TiViewProxy {
 						Log.e(LCAT, "cannot fireEvent 'ready' ");
 					}
 				}
-			}; 
+			};
 			fortuneView.setGrooveListener(grooveListener);
 			setNativeView(container);
 		}
+
 		@Override
 		public void processProperties(KrollDict d) {
 			super.processProperties(d);
@@ -173,7 +193,7 @@ public class WheelViewProxy extends TiViewProxy {
 						new String[] { url }, false);
 				bitmap = TiUIHelper.createBitmap(file.getInputStream());
 			} catch (IOException e) {
-				Log.e(LCAT, " WheelView only supports local image files "+ url);
+				Log.e(LCAT, " WheelView only supports local image files " + url);
 				// file:///android_asset/Resources/[object TiFileProxy]
 			}
 			return bitmap;
