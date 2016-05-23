@@ -14,7 +14,9 @@ Usage
 var Module = require('de.appwerft.fortunewheel');
 
 var wheelView = Module.createWheelView({
-    icons : [], // array of locale images, accepts a string path to a local file, or a TiBlob image object.
+    icons : ["amphibia", "aves", "insecta", "mammalia", "reptilia"].map(function(icon) {
+        return Ti.Filesystem.getFile(Ti.Filesystem.resourcesDirectory, "assets", icon + '.png').nativePath;
+    }), // array of locale images, accepts a string path to a local file, or a TiBlob image object.
     options : { /* following properties are optional */
         spinSensitivity : 1, // Multipler for spin speed. ie .5, half the speed of finger
         frameRate : 40, // Frames per second
