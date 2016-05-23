@@ -52,7 +52,7 @@ public class WheelViewProxy extends TiViewProxy {
 	public String[] icons;
 
 	public HashMap<String, Object> attrs = new HashMap<String, Object>();
-
+	FortuneView fortuneView;
 	// Constructor
 	public WheelViewProxy() {
 		super();
@@ -68,7 +68,20 @@ public class WheelViewProxy extends TiViewProxy {
 		// mView.addWheel(icons,attrs);
 		return mView;
 	}
-
+	@Kroll.method
+	public int getSelectedIndex() {
+		return fortuneView.getSelectedIndex();
+	}
+	@Kroll.method
+	public void setSelectedItem(int ndx) {
+		fortuneView.setSelectedItem(ndx);
+	}
+	
+	@Kroll.method
+	public int getTotalItems() {
+		return fortuneView.getTotalItems();
+	}
+	
 	// Handle creation options
 	@Override
 	public void handleCreationDict(KrollDict args) {
@@ -102,25 +115,22 @@ public class WheelViewProxy extends TiViewProxy {
 	}
 
 	private class WheelView extends TiUIView {
-		FortuneView fortuneView;
-
+		
 		WheelView(final TiViewProxy proxy) {
 			super(proxy);
 			LayoutParams lp = new LayoutParams(LayoutParams.WRAP_CONTENT,
 					LayoutParams.WRAP_CONTENT);
 			LinearLayout container = new LinearLayout(proxy.getActivity());
 			container.setLayoutParams(lp);
-			fortuneView = new FortuneView(proxy.getActivity());// this kills
-			ArrayList<FortuneItem> dis = new ArrayList<FortuneItem>();
+			fortuneView = new FortuneView(proxy.getActivity());
+			ArrayList<FortuneItem> list = new ArrayList<FortuneItem>();
 			for (int i = 0; i < icons.length; i++) {
-				dis.add(new FortuneItem(getBitmapFromImage(icons[i])));
-			}
+				list.add(new FortuneItem(getBitmapFromImage(icons[i])));
+			}	
+			fortuneView.addFortuneItems(list);
 			container.addView(fortuneView);
 			setNativeView(container);
 		}
-
-		// void addWheel(String[] icons, HashMap<String, Object> options) {};
-
 		@Override
 		public void processProperties(KrollDict d) {
 			super.processProperties(d);
@@ -128,28 +138,27 @@ public class WheelViewProxy extends TiViewProxy {
 
 		private Bitmap getBitmapFromImage(Object val) {
 			if (val instanceof TiBlob) {
-				// this is a blob, parse accordingly
-				TiBlob imgBlob = (TiBlob) val;
 				TiDrawableReference ref = TiDrawableReference.fromBlob(
-						proxy.getActivity(), imgBlob);
+						proxy.getActivity(), (TiBlob) val);
 				return ref.getBitmap();
 			} else {
-				String imgValue = (String) val;
-				return loadImageFromApplication(imgValue);
+				return loadImageFromApplication((String) val);
 			}
 		}
 
 		private Bitmap loadImageFromApplication(String imageName) {
-			Bitmap result = null;
+			Bitmap bitmap = null;
+			String url = null;
 			try {
-				String url = resolveUrl(null,imageName);
+				url = resolveUrl(null, imageName);
 				TiBaseFile file = TiFileFactory.createTitaniumFile(
 						new String[] { url }, false);
-				result = TiUIHelper.createBitmap(file.getInputStream());
+				bitmap = TiUIHelper.createBitmap(file.getInputStream());
 			} catch (IOException e) {
-				Log.e(LCAT, " WheelView only supports local image files");
+				Log.e(LCAT, " WheelView only supports local image files "+ url);
+				// file:///android_asset/Resources/[object TiFileProxy]
 			}
-			return result;
+			return bitmap;
 		}
 	}
 

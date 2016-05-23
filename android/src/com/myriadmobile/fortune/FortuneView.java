@@ -9,12 +9,13 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
+import org.appcelerator.kroll.common.Log;
+
 import com.myriadmobile.fortune.paths.CircleWheelPath;
 import com.myriadmobile.fortune.paths.CustomWheelPath;
 
 import java.util.ArrayList;
 import java.util.List;
-import android.graphics.BitmapFactory;
 
 /**
  * Created by cclose on 9/3/14.
@@ -31,7 +32,7 @@ public class FortuneView extends View implements RedrawListener {
 	Canvas mCanvas;
 	CustomWheelPath path = new CircleWheelPath();
 
-	// Settings
+	// Default settings
 	private double spinSensitivity = 1; // Multipler for spin speed. ie .5, half
 										// the speed of finger
 	private int frameRate = 40; // Frames per second
@@ -53,14 +54,7 @@ public class FortuneView extends View implements RedrawListener {
 														// force act on the
 														// background
 	public FortuneItem.HingeType backgroundHinge = FortuneItem.HingeType.Fixed; // Background
-																				// hinge
 	private float minimumSize = .5f; // Minimun size of a view
-
-	public FortuneView(Context context, AttributeSet attrs) {
-		super(context, attrs);
-		swipeController = new SwipeController(this, velocityClamp, friction,
-				frameRate, grooves, flingable, spinSensitivity);
-	}
 	public FortuneView(Context context) {
 		super(context);
 		swipeController = new SwipeController(this, velocityClamp, friction,
@@ -113,7 +107,6 @@ public class FortuneView extends View implements RedrawListener {
 
 		// Add Background to the canvas.
 		if (backgroundResourceId != -1) {
-
 			Bitmap backgroundImage = BitmapFactory.decodeResource(
 					getResources(), backgroundResourceId);
 			int smallSide = (int) ((canvas.getWidth() > canvas.getHeight() ? canvas
@@ -125,7 +118,6 @@ public class FortuneView extends View implements RedrawListener {
 			int backgroundY = smallSide
 					* (backgroundImage.getHeight() / backgroundImage.getWidth())
 					/ 2;
-
 			matrix.reset();
 			if (backgroundHinge == FortuneItem.HingeType.Fixed) {
 				matrix.postRotate((float) (radians / Math.PI * 180),
@@ -158,7 +150,7 @@ public class FortuneView extends View implements RedrawListener {
 		// Notify Listener
 		if (getSelectedIndex() != lastGrooveIndex) {
 			lastGrooveIndex = getSelectedIndex();
-			// Log.d("Groove", "Change: " + lastGrooveIndex);
+			 Log.d("Groove", "Change: " + lastGrooveIndex);
 			if (grooveListener != null)
 				grooveListener.onGrooveChange(lastGrooveIndex);
 		}
