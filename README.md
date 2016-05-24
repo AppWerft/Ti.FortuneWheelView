@@ -4,7 +4,7 @@ Ti.FortuneWheelView
 This is a Titanium Mobile module project, that wrappes the project https://github.com/myriadmobile/fortune. 
 Thanks to [Myriad mobile](http://www.myriadmobile.com/)
 
-![](https://raw.githubusercontent.com/AppWerft/Ti.FortuneWheelView/master/documentation/wheelView.png)
+![](https://raw.githubusercontent.com/AppWerft/Ti.FortuneWheelView/master/documentation/wheelView.gif)
 
 It is still in progress …   
 
