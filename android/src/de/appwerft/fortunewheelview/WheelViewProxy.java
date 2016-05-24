@@ -9,6 +9,8 @@
 package de.appwerft.fortunewheelview;
 
 import java.io.IOException;
+import java.util.Iterator;
+import java.util.Map;
 
 import org.appcelerator.kroll.KrollDict;
 import org.appcelerator.kroll.common.Log;
@@ -48,6 +50,21 @@ public class WheelViewProxy extends TiViewProxy {
 	// Constructor
 	public WheelViewProxy() {
 		super();
+		attributes = new KrollDict();
+		attributes.put("centripetalPercent", .25f);
+		attributes.put("distanceScale", 1f);
+		attributes.put("flingable", true);
+		attributes.put("frameRate", 40);
+		attributes.put("friction", 5);
+
+		attributes.put("grooves", true);
+		attributes.put("minimumSize", .1f);
+		attributes.put("notch", 90);
+		attributes.put("spinSensitivity", 1f);
+		attributes.put("selectScaleOffset", 1f);
+
+		attributes.put("unselectScaleOffset", .8f);
+		attributes.put("velocityClamp", 15);
 		Log.d(LCAT, "WheelViewProxy");
 	}
 
@@ -79,55 +96,43 @@ public class WheelViewProxy extends TiViewProxy {
 	@Override
 	public void handleCreationDict(KrollDict args) {
 		super.handleCreationDict(args);
-		Log.d(LCAT, args.toString());
 		Log.d(LCAT, "handleCreationDict");
 		if (args.containsKey("icons")) {
 			icons = args.getStringArray("icons");
-			Log.d(LCAT, icons.toString());
 		}
-		KrollDict options = new KrollDict();
-		attributes = new KrollDict();
-		if (args.containsKey("options")) {
-			options = args.getKrollDict("options");
-			attributes.put("spinSensitivity",
-					options.getOrDefault("spinSensitivity", 1f));
-			attributes.put("frameRate", options.getOrDefault("frameRate", 40));
-			attributes.put("friction", options.getOrDefault("friction", 5));
-			attributes.put("velocityClamp",
-					options.getOrDefault("velocityClamp", 15));
-			attributes
-					.put("flingable", options.getOrDefault("flingable", true));
-			attributes.put("grooves", options.getOrDefault("grooves", true));
-			attributes.put("notch", options.getOrDefault("notch", 90));
-			attributes.put("unselectScaleOffset",
-					options.getOrDefault("unselectScaleOffset", .8f));
-			attributes.put("selectScaleOffset",
-					options.getOrDefault("selectScaleOffset", 1));
-			attributes.put("distanceScale",
-					options.getOrDefault("distanceScale", 1));
-			attributes.put("centripetalPercent",
-					options.getOrDefault("centripetalPercent", .25f));
-			attributes.put("minimumSize",
-					options.getOrDefault("minimumSize", .1f));
-			attributes.put("distanceScale",
-					options.getOrDefault("distanceScale", 1f));
-			
-			
-		} else {
-			attributes.put("spinSensitivity", 1f);
-			attributes.put("frameRate", 40);
-			attributes.put("friction", 5);
-			attributes.put("velocityClamp", 15);
-			attributes.put("flingable", true);
-			attributes.put("grooves", true);
-			attributes.put("notch", 90);
-			attributes.put("unselectScaleOffset", .8f);
-			attributes.put("selectScaleOffset", 1);
-			attributes.put("distanceScale", 1);
-			attributes.put("centripetalPercent", .25f);
-			attributes.put("minimumSize", .1f);
-			attributes.put("distanceScale", .1f);
-			
+		if (args.containsKey("wheelOptions")) {
+			KrollDict options = args.getKrollDict("wheelOptions");
+			Log.d(LCAT, "There are options:\n≠≠≠≠≠≠≠≠≠≠≠≠≠≠≠≠≠≠≠≠≠≠≠≠≠≠ ");
+			Log.d(LCAT, options.toString());
+			for (Map.Entry<String, Object> entry : options.entrySet()) {
+				Log.d(LCAT, entry.getKey() + "/" + entry.getValue());
+
+			}
+			/*
+			 * attributes.put("centripetalPercent",
+			 * options.getOrDefault("centripetalPercent", .25f)); Log.d(LCAT,
+			 * attributes.toString()); attributes.put("distanceScale",
+			 * options.getOrDefault("distanceScale", 1)); Log.d(LCAT,
+			 * attributes.toString()); attributes .put("flingable",
+			 * options.getOrDefault("flingable", true));
+			 * attributes.put("frameRate", options.getOrDefault("frameRate",
+			 * 40)); attributes.put("friction", options.getOrDefault("friction",
+			 * 5));
+			 * 
+			 * attributes.put("grooves", options.getOrDefault("grooves", true));
+			 * attributes.put("minimumSize", options.getOrDefault("minimumSize",
+			 * .1f)); attributes.put("notch", options.getOrDefault("notch",
+			 * 90)); attributes.put("spinSensitivity",
+			 * options.getOrDefault("spinSensitivity", 1f));
+			 * attributes.put("selectScaleOffset",
+			 * options.getOrDefault("selectScaleOffset", 1f));
+			 * 
+			 * attributes.put("unselectScaleOffset",
+			 * options.getOrDefault("unselectScaleOffset", .8f));
+			 * attributes.put("velocityClamp",
+			 * options.getOrDefault("velocityClamp", 15));
+			 * Log.d(LCAT,"all options set");
+			 */
 		}
 	}
 
@@ -144,7 +149,6 @@ public class WheelViewProxy extends TiViewProxy {
 			fortuneView = new FortuneView(proxy.getActivity());
 			fortuneView.setOptions(attributes);
 			fortuneView.initSwipeControler();
-
 			// adding of content into view:
 			ArrayList<FortuneItem> list = new ArrayList<FortuneItem>();
 			for (int i = 0; i < icons.length; i++) {

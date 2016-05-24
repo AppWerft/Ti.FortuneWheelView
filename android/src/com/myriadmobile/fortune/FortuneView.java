@@ -1,23 +1,21 @@
 package com.myriadmobile.fortune;
 
 import android.content.Context;
+
+import org.appcelerator.titanium.util.TiConvert;
+
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
-import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
-
-import org.appcelerator.kroll.common.Log;
 
 import com.myriadmobile.fortune.paths.CircleWheelPath;
 import com.myriadmobile.fortune.paths.CustomWheelPath;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import de.appwerft.fortunewheelview.*;
 import org.appcelerator.kroll.KrollDict;
 
 /**
@@ -36,7 +34,7 @@ public class FortuneView extends View implements RedrawListener {
 	CustomWheelPath path = new CircleWheelPath();
 
 	// Default settings
-	private double spinSensitivity; // Multipler for spin speed. ie .5,
+	private float spinSensitivity; // Multipler for spin speed. ie .5,
 									// half
 									// the speed of finger
 	private int frameRate; // Frames per second
@@ -69,13 +67,20 @@ public class FortuneView extends View implements RedrawListener {
 	}
 
 	public void setOptions(KrollDict attributes) {
-		velocityClamp = attributes.getDouble("velocityClamp");
-		friction = attributes.getDouble("friction");
-		frameRate = attributes.getInt("frameRate");
-		grooves = attributes.getBoolean("grooves");
-		flingable = attributes.getBoolean("flingable");
-		notch = attributes.getInt("notch");
-		spinSensitivity = 1f;//attributes.getDouble("spinSensitivity");
+		centripetalPercent = TiConvert
+				.toFloat(attributes, "centripetalPercent");
+		distanceScale = TiConvert.toFloat(attributes, "distanceScale");
+		flingable = TiConvert.toBoolean(attributes, "flingable");
+		frameRate = TiConvert.toInt(attributes, "frameRate");
+		friction = TiConvert.toDouble(attributes, "friction");
+		grooves = TiConvert.toBoolean(attributes, "grooves");
+		minimumSize = TiConvert.toFloat(attributes, "minimumSize");
+		notch = TiConvert.toInt(attributes, "notch");
+		spinSensitivity = TiConvert.toFloat(attributes, "spinSensitivity");
+		selectScaleOffset = TiConvert.toFloat(attributes, "selectScaleOffset");
+		unselectScaleOffset = TiConvert.toFloat(attributes,
+				"unselectScaleOffset");
+		velocityClamp = TiConvert.toDouble(attributes, "velocityClamp");
 	}
 
 	public void initSwipeControler() {
