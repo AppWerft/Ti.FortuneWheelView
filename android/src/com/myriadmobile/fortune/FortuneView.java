@@ -16,17 +16,20 @@ import com.myriadmobile.fortune.paths.CustomWheelPath;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import org.appcelerator.kroll.KrollDict;
 
 /**
  * Created by cclose on 9/3/14.
  */
-public class FortuneView extends View implements RedrawListener {
+public class FortuneView extends View implements RedrawListener,
+		WheelClickListener {
 
 	private ArrayList<FortuneItem> fortuneItems = new ArrayList<FortuneItem>();
 	public static final String LCAT = "FortuneView";
 	double radius;
 	GrooveListener grooveListener;
+	WheelClickListener wheelClickListener;
 	int lastGrooveIndex = 0;
 	Matrix matrix = new Matrix();
 	SwipeController swipeController;
@@ -84,8 +87,9 @@ public class FortuneView extends View implements RedrawListener {
 	}
 
 	public void initSwipeControler() {
-		swipeController = new SwipeController(this, velocityClamp, friction,
-				frameRate, grooves, flingable, spinSensitivity);
+		swipeController = new SwipeController(this, this, velocityClamp,
+				friction, frameRate, grooves, flingable, spinSensitivity,
+				grooveListener);
 	};
 
 	public void setGrooveListener(GrooveListener grooveListener) {
@@ -180,6 +184,7 @@ public class FortuneView extends View implements RedrawListener {
 			lastGrooveIndex = getSelectedIndex();
 			if (grooveListener != null)
 				grooveListener.onGrooveChange(lastGrooveIndex);
+
 		}
 	}
 
@@ -268,4 +273,9 @@ public class FortuneView extends View implements RedrawListener {
 		return total;
 	}
 
+	@Override
+	public void onLongpress() {
+		if (grooveListener != null)
+			grooveListener.onGrooveClicked(lastGrooveIndex);
+	}
 }

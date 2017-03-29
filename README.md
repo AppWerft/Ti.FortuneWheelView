@@ -15,7 +15,7 @@ Usage
 var Module = require('de.appwerft.fortunewheel');
 
 var wheelView = Module.createWheelView({
-    icons : ["amphibia", "aves", "insecta", "mammalia", "reptilia"].map(function(icon) {
+    images : ["amphibia", "aves", "insecta", "mammalia", "reptilia"].map(function(icon) {
         return Ti.Filesystem.getFile(Ti.Filesystem.resourcesDirectory, "assets", icon + '.png').nativePath;
     }), // array of locale images, accepts a string path to a local file, or a TiBlob image object.
     wheelOptions : { /* following properties are optional */
@@ -33,9 +33,13 @@ var wheelView = Module.createWheelView({
     }
 });
 
-wheelView.addEventListener('groovechanged',function(){
+wheelView.addEventListener('changed',function(){
     console.log(arguments[0].index);
 });
+wheelView.addEventListener('clicked',function(){
+    console.log(arguments[0].index);
+});
+
 
 wheelView.setSelectedItem(2);
 wheelView.getSelectedIndex();

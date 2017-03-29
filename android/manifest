@@ -2,7 +2,7 @@
 # this is your module manifest and used by Titanium
 # during compilation, packaging, distribution, etc.
 #
-version: 1.0.4
+version: 1.0.6
 apiversion: 2
 architectures: armeabi armeabi-v7a x86
 description: Ti.FortuneWheelView
@@ -15,4 +15,4 @@ name: fortunewheelview
 moduleid: de.appwerft.fortunewheelview
 guid: 7f92a950-4ca4-467a-8f75-f35e951e2681
 platform: android
-minsdk: 5.2.0.GENPERM
+minsdk: 4.2.0.GA
