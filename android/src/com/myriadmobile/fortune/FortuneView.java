@@ -28,8 +28,7 @@ public class FortuneView extends View implements RedrawListener,
 	private ArrayList<FortuneItem> fortuneItems = new ArrayList<FortuneItem>();
 	public static final String LCAT = "FortuneView";
 	double radius;
-	GrooveListener grooveListener;
-	WheelClickListener wheelClickListener;
+	private GrooveListener grooveListener;
 	int lastGrooveIndex = 0;
 	Matrix matrix = new Matrix();
 	SwipeController swipeController;

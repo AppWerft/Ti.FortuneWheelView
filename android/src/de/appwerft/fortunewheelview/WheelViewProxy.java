@@ -9,19 +9,21 @@
 package de.appwerft.fortunewheelview;
 
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.Map;
 
 import org.appcelerator.kroll.KrollDict;
+import org.appcelerator.kroll.common.AsyncResult;
 import org.appcelerator.kroll.common.Log;
+import org.appcelerator.kroll.common.TiMessenger;
 import org.appcelerator.kroll.annotations.Kroll;
-import org.appcelerator.kroll.common.Log;
+
 import org.appcelerator.titanium.proxy.TiViewProxy;
 import org.appcelerator.titanium.io.TiFileFactory;
 import org.appcelerator.titanium.io.TiBaseFile;
 import org.appcelerator.titanium.util.TiUIHelper;
 import org.appcelerator.titanium.view.TiUIView;
 import org.appcelerator.titanium.view.TiDrawableReference;
+import org.appcelerator.titanium.TiApplication;
 import org.appcelerator.titanium.TiBlob;
 import org.appcelerator.titanium.TiC;
 
@@ -30,10 +32,10 @@ import com.myriadmobile.fortune.FortuneItem;
 import com.myriadmobile.fortune.GrooveListener;
 
 import android.app.Activity;
+import android.os.Message;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 
-import java.util.HashMap;
 import java.util.ArrayList;
 
 import android.graphics.Bitmap;
@@ -43,10 +45,14 @@ public class WheelViewProxy extends TiViewProxy {
 	// Standard Debugging variables
 	public static final String LCAT = "WheelView";
 
-	public TiUIWheelView mView;
+	public TiUIWheelView tiView;
 	public String[] icons;
 	public KrollDict attributes;
 	FortuneView fortuneView;
+	private static final int MSG_FIRST_ID = TiViewProxy.MSG_LAST_ID + 1;
+	final private int MSG_SET = MSG_FIRST_ID + 100;
+	final private int MSG_GET = MSG_FIRST_ID + 101;
+	final private int MSG_TOTAL = MSG_FIRST_ID + 102;
 
 	// Constructor
 	public WheelViewProxy() {
@@ -70,39 +76,85 @@ public class WheelViewProxy extends TiViewProxy {
 
 	@Override
 	public TiUIView createView(Activity activity) {
-		Log.d(LCAT, "createView inside ViewProxy ≠≠≠≠≠≠≠");
-		mView = new TiUIWheelView(this);
-		mView.getLayoutParams().autoFillsHeight = true;
-		mView.getLayoutParams().autoFillsWidth = true;
-		return mView;
+		tiView = new TiUIWheelView(this);
+		tiView.getLayoutParams().autoFillsHeight = true;
+		tiView.getLayoutParams().autoFillsWidth = true;
+		return tiView;
 	}
 
-	@Kroll.method
-	public int getSelectedIndex() {
+	@Override
+	public boolean handleMessage(Message msg) {
+		AsyncResult result = null;
+		switch (msg.what) {
+		case MSG_GET: {
+			result = (AsyncResult) msg.obj;
+			handleGetSelectedIndex();
+			result.setResult(null);
+			return true;
+		}
+		case MSG_TOTAL: {
+			result = (AsyncResult) msg.obj;
+			handleGetTotalItems();
+			result.setResult(null);
+			return true;
+		}
+		default: {
+			return super.handleMessage(msg);
+		}
+		}
+	}
+
+	private int handleGetTotalItems() {
+		return fortuneView.getTotalItems();
+	}
+
+	private int handleGetSelectedIndex() {
 		return fortuneView.getSelectedIndex();
 	}
 
-	@Kroll.method
-	public void setSelectedItem(int ndx) {
+	private void handleSetSelectedItem(int ndx) {
 		fortuneView.setSelectedItem(ndx);
 	}
 
 	@Kroll.method
-	public int getTotalItems() {
-		return fortuneView.getTotalItems();
+	public int getSelectedIndex() {
+		if (TiApplication.isUIThread()) {
+			return handleGetSelectedIndex();
+		} else {
+			return (int) TiMessenger.sendBlockingMainMessage(getMainHandler()
+					.obtainMessage(MSG_GET));
+		}
 	}
 
-	// Handle creation options
+	@Kroll.method
+	public void setSelectedItem(int ndx) {
+		if (TiApplication.isUIThread()) {
+			handleSetSelectedItem(ndx);
+		} else {
+			TiMessenger.sendBlockingMainMessage(
+					getMainHandler().obtainMessage(MSG_SET), ndx);
+		}
+
+	}
+
+	@Kroll.method
+	public int getTotalItems() {
+		if (TiApplication.isUIThread()) {
+			return handleGetTotalItems();
+		} else {
+			return (int) TiMessenger.sendBlockingMainMessage(getMainHandler()
+					.obtainMessage(MSG_TOTAL));
+		}
+	}
+
 	@Override
 	public void handleCreationDict(KrollDict args) {
 		super.handleCreationDict(args);
-		Log.d(LCAT, "handleCreationDict");
 		if (args.containsKey(TiC.PROPERTY_IMAGES)) {
 			icons = args.getStringArray(TiC.PROPERTY_IMAGES);
-			Log.d(LCAT, icons.toString());
 		}
-		if (args.containsKey("wheelOptions")) {
-			KrollDict options = args.getKrollDict("wheelOptions");
+		if (args.containsKey(TiC.PROPERTY_OPTIONS)) {
+			KrollDict options = args.getKrollDict(TiC.PROPERTY_OPTIONS);
 			for (Map.Entry<String, Object> entry : options.entrySet()) {
 				attributes.put(entry.getKey(), entry.getValue());
 			}
@@ -147,18 +199,15 @@ public class WheelViewProxy extends TiViewProxy {
 					LayoutParams.WRAP_CONTENT);
 			LinearLayout container = new LinearLayout(proxy.getActivity());
 			container.setLayoutParams(lp);
-			// attributes are visible
 			fortuneView = new FortuneView(proxy.getActivity());
 			fortuneView.setOptions(attributes);
 			fortuneView.initSwipeControler();
-			// adding of content into view:
 			ArrayList<FortuneItem> list = new ArrayList<FortuneItem>();
 			for (int i = 0; i < icons.length; i++) {
 				list.add(new FortuneItem(getBitmapFromImage(icons[i])));
 			}
 			fortuneView.addFortuneItems(list);
 			container.addView(fortuneView);
-			// initiating listener(s)
 			GrooveListener grooveListener = new OnGrooveHandler(proxy);
 			fortuneView.setGrooveListener(grooveListener);
 			setNativeView(container);
@@ -169,19 +218,14 @@ public class WheelViewProxy extends TiViewProxy {
 			super.processProperties(d);
 		}
 
-		// loading of images from Ti.Blob or from Ressources folder
 		private Bitmap getBitmapFromImage(Object val) {
 			if (val instanceof TiBlob) {
-				Log.d(LCAT, "image is blob");
-				// in this case we can directly import:
 				TiDrawableReference ref = TiDrawableReference.fromBlob(
 						proxy.getActivity(), (TiBlob) val);
 				return ref.getBitmap();
 			} else if (val instanceof String) {
-				Log.d(LCAT, "image is String " + (String) val);
 				return loadImageFromApplication((String) val);
 			} else {
-				Log.e(LCAT, "images must be blobs or path");
 				return null;
 			}
 		}
@@ -193,9 +237,7 @@ public class WheelViewProxy extends TiViewProxy {
 				url = resolveUrl(null, imageName);
 				TiBaseFile file = TiFileFactory.createTitaniumFile(
 						new String[] { url }, false);
-				Log.d(LCAT, file.nativePath());
 				bitmap = TiUIHelper.createBitmap(file.getInputStream());
-				Log.d(LCAT, "bytes=" + bitmap.getByteCount());
 			} catch (IOException e) {
 				Log.e(LCAT, " WheelView only supports local image files " + url);
 			}
