@@ -72,6 +72,7 @@ public class WheelViewProxy extends TiViewProxy {
 
 		attributes.put("unselectScaleOffset", .8f);
 		attributes.put("velocityClamp", 15);
+		attributes.put("longpressTreshold", 1000);
 	}
 
 	@Override
@@ -244,5 +245,4 @@ public class WheelViewProxy extends TiViewProxy {
 			return bitmap;
 		}
 	}
-
 }

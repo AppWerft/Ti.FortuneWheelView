@@ -1,7 +1,7 @@
 Ti.FortuneWheelView
 ===================
 
-This is a Titanium Mobile module project, that wrappes the project https://github.com/myriadmobile/fortune. 
+This is a Axway Titanium™  module project, that wrappes the project https://github.com/myriadmobile/fortune. 
 Thanks to [Myriad mobile](http://www.myriadmobile.com/)
 
 ![](https://github.com/AppWerft/Ti.FortuneWheelView/raw/master/android/assets/wheelView.gif)
@@ -18,7 +18,7 @@ var wheelView = Module.createWheelView({
     images : ["amphibia", "aves", "insecta", "mammalia", "reptilia"].map(function(icon) {
         return Ti.Filesystem.getFile(Ti.Filesystem.resourcesDirectory, "assets", icon + '.png').nativePath;
     }), // array of locale images, accepts a string path to a local file, or a TiBlob image object.
-    wheelOptions : { /* following properties are optional */
+    options : { /* following properties are optional */
         spinSensitivity : 1, // Multipler for spin speed. ie .5, half the speed of finger
         frameRate : 40, // Frames per second
         friction : 5, // Slows down friction radians per second
