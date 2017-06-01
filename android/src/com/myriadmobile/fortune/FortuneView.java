@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.appcelerator.kroll.KrollDict;
+import org.appcelerator.kroll.common.Log;
 
 /**
  * Created by cclose on 9/3/14.
@@ -57,6 +58,7 @@ public class FortuneView extends View implements RedrawListener,
 	private boolean backgroundCentripetalForce = false; // Does centripetal
 														// force act on the
 														// background
+	private int selectedIndex = 0;
 	public FortuneItem.HingeType backgroundHinge = FortuneItem.HingeType.Fixed; // Background
 	private float minimumSize = .5f; // Minimun size of a view
 
@@ -83,6 +85,7 @@ public class FortuneView extends View implements RedrawListener,
 		unselectScaleOffset = TiConvert.toFloat(attributes,
 				"unselectScaleOffset");
 		velocityClamp = TiConvert.toDouble(attributes, "velocityClamp");
+		selectedIndex = TiConvert.toInt(attributes, "selectedIndex");
 	}
 
 	public void initSwipeControler() {
@@ -98,6 +101,7 @@ public class FortuneView extends View implements RedrawListener,
 	public void addFortuneItems(List<FortuneItem> items) {
 		fortuneItems.addAll(items);
 		swipeController.setTotalItems(fortuneItems.size());
+		setSelectedItem(selectedIndex);
 		reconfigure(true);
 	}
 
@@ -234,6 +238,7 @@ public class FortuneView extends View implements RedrawListener,
 			return;
 
 		// Fling to the needed offset for the icon
+		Log.d(LCAT, " Fling to the needed offset for the icon");
 		swipeController.flingToRadians(positionOnWheel(index));
 
 	}

@@ -110,16 +110,7 @@ public class SwipeController {
 		double diffX = event.getX() - width / 2;
 		double diffY = event.getY() - height / 2;
 		double radianNew = Math.atan(Math.abs(diffY / diffX));
-		if (event.getAction() == MotionEvent.ACTION_DOWN) {
-			Log.d("WheelV", ">>>> MotionEvent.ACTION_DOWN "
-					+ android.view.ViewConfiguration.getLongPressTimeout());
-			handler.postDelayed(longPressed,
-					android.view.ViewConfiguration.getLongPressTimeout());
-		}
-		if (event.getAction() == MotionEvent.ACTION_UP) {
-			Log.d("WheelV", "<<<<  MotionEvent.RESET of handler");
-			handler.removeCallbacks(longPressed);
-		}
+
 		switch (event.getAction()) {
 		case MotionEvent.ACTION_DOWN:
 			removeAllMotion();
@@ -128,6 +119,12 @@ public class SwipeController {
 			clear();
 			addFlingPoint(new Date().getTime(), radianOffset);
 			userActive = true;
+
+			Log.d("WheelV", ">>>> MotionEvent.ACTION_DOWN "
+					+ android.view.ViewConfiguration.getLongPressTimeout());
+			handler.postDelayed(longPressed,
+					android.view.ViewConfiguration.getLongPressTimeout());
+
 			return true;
 		case MotionEvent.ACTION_UP:
 			userActive = false;
@@ -139,7 +136,8 @@ public class SwipeController {
 				// Lock to a groove
 				lockToGroove();
 			}
-
+			Log.d("WheelV", "<<<<  MotionEvent.RESET of handler");
+			handler.removeCallbacks(longPressed);
 			redrawListener.redraw();
 			return true;
 		case MotionEvent.ACTION_MOVE:
@@ -157,6 +155,7 @@ public class SwipeController {
 
 			redrawListener.redraw();
 			return true;
+
 		}
 
 		return false;

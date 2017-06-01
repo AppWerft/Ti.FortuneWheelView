@@ -73,6 +73,7 @@ public class WheelViewProxy extends TiViewProxy {
 		attributes.put("unselectScaleOffset", .8f);
 		attributes.put("velocityClamp", 15);
 		attributes.put("longpressTreshold", 1000);
+		attributes.put("selectedIndex", 0);
 	}
 
 	@Override
@@ -88,6 +89,12 @@ public class WheelViewProxy extends TiViewProxy {
 		AsyncResult result = null;
 		switch (msg.what) {
 		case MSG_GET: {
+			result = (AsyncResult) msg.obj;
+			handleSetSelectedIndex((int) msg.obj);
+			result.setResult(null);
+			return true;
+		}
+		case MSG_SET: {
 			result = (AsyncResult) msg.obj;
 			handleGetSelectedIndex();
 			result.setResult(null);
@@ -110,11 +117,17 @@ public class WheelViewProxy extends TiViewProxy {
 	}
 
 	private int handleGetSelectedIndex() {
-		return fortuneView.getSelectedIndex();
+		if (fortuneView != null)
+			return fortuneView.getSelectedIndex();
+		Log.w(LCAT, "fortuneView is null");
+		return 0;
 	}
 
-	private void handleSetSelectedItem(int ndx) {
-		fortuneView.setSelectedItem(ndx);
+	private void handleSetSelectedIndex(int ndx) {
+		if (fortuneView != null)
+			fortuneView.setSelectedItem(ndx);
+		else
+			Log.w(LCAT, "fortuneView is null");
 	}
 
 	@Kroll.method
@@ -128,9 +141,9 @@ public class WheelViewProxy extends TiViewProxy {
 	}
 
 	@Kroll.method
-	public void setSelectedItem(int ndx) {
+	public void setSelectedIndex(int ndx) {
 		if (TiApplication.isUIThread()) {
-			handleSetSelectedItem(ndx);
+			handleSetSelectedIndex(ndx);
 		} else {
 			TiMessenger.sendBlockingMainMessage(
 					getMainHandler().obtainMessage(MSG_SET), ndx);
@@ -172,10 +185,12 @@ public class WheelViewProxy extends TiViewProxy {
 
 			@Override
 			public void onGrooveChange(int index) {
-				if (proxy.hasListeners("changed")) {
+
+				if (proxy.hasListeners("grovechanged")) {
+					Log.d(LCAT, "grovechanged " + index);
 					KrollDict payload = new KrollDict();
 					payload.put("index", index);
-					proxy.fireEvent("changed", payload);
+					proxy.fireEvent("grovechanged", payload);
 				} else {
 					Log.e(LCAT, "cannot fireEvent 'ready' ");
 				}
