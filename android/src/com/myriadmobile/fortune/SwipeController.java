@@ -3,6 +3,7 @@ package com.myriadmobile.fortune;
 import java.util.Date;
 
 import org.appcelerator.kroll.common.Log;
+import org.appcelerator.titanium.TiApplication;
 
 import android.os.Handler;
 import android.view.MotionEvent;
@@ -33,6 +34,8 @@ public class SwipeController {
 	double radianStart;
 	double lastOffset;
 	Handler flingHandler;
+	float lastX;
+	float lastY;
 
 	public SwipeController(WheelClickListener wheelClickListener,
 			RedrawListener redrawListener, double velocityClamp,
@@ -82,16 +85,6 @@ public class SwipeController {
 		this.totalItems = totalItems;
 	}
 
-	final Handler handler = new Handler();
-	Runnable longPressed = new Runnable() {
-		public void run() {
-			if (wheelClickListener != null)
-				wheelClickListener.onLongpress();
-			else
-				Log.e("WheelV", "wheelClickListener was null");
-		}
-	};
-
 	/**
 	 * The work horse of the class, This calculates all user input with the
 	 * Swipe Controller
@@ -104,44 +97,72 @@ public class SwipeController {
 	 *            height of the touchable surface
 	 * @return
 	 */
+	long pressStartTime = 0;
+	float mDownX = 0;
+	float mDownY = 0;
+
 	public boolean handleUserEvent(MotionEvent event, double width,
 			double height) {
+		double deltaX;
+		double deltaY;
+		double distance;
 
+		final float SCROLL_THRESHOLD = 10;
+
+		/**
+		 * Max allowed duration for a "click", in milliseconds.
+		 */
+		final int MAX_CLICK_DURATION = 1000;
+
+		/**
+		 * Max allowed distance to move during a "click", in DP.
+		 */
+		final int MAX_CLICK_DISTANCE = 15;
+		boolean isOnClick = false;
 		double diffX = event.getX() - width / 2;
 		double diffY = event.getY() - height / 2;
 		double radianNew = Math.atan(Math.abs(diffY / diffX));
+		deltaX = event.getX() - lastX;
+		deltaY = event.getY() - lastY;
+		distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+		lastX = event.getX();
+		lastY = event.getY();
 
-		switch (event.getAction()) {
+		switch (event.getAction() & MotionEvent.ACTION_MASK) {
 		case MotionEvent.ACTION_DOWN:
 			removeAllMotion();
+			pressStartTime = System.currentTimeMillis();
+			mDownX = event.getX();
+			mDownY = event.getY();
+			isOnClick = true;
 			radianStart = radianNew;
 			lastOffset = radianOffset;
 			clear();
 			addFlingPoint(new Date().getTime(), radianOffset);
 			userActive = true;
-
-			Log.d("WheelV", ">>>> MotionEvent.ACTION_DOWN "
-					+ android.view.ViewConfiguration.getLongPressTimeout());
-			handler.postDelayed(longPressed,
-					android.view.ViewConfiguration.getLongPressTimeout());
-
-			return true;
+			break;
+		case MotionEvent.ACTION_CANCEL:
 		case MotionEvent.ACTION_UP:
+			long pressDuration = System.currentTimeMillis() - pressStartTime;
+			if (pressDuration < MAX_CLICK_DURATION
+					&& distance(mDownX, mDownY, event.getX(), event.getY()) < MAX_CLICK_DISTANCE) {
+				if (wheelClickListener != null) {
+					wheelClickListener.onLongpress();
+				}
+			}
+			if (isOnClick) {
+
+				// TODO onClick code
+			}
 			userActive = false;
-			// radianOffset = getLockedRadians();
 			if (flingable && Math.abs(calculateFlingVelocity()) > 4) {
-				// Fling
 				startFling();
 			} else if (grooves) {
-				// Lock to a groove
 				lockToGroove();
 			}
-			Log.d("WheelV", "<<<<  MotionEvent.RESET of handler");
-			handler.removeCallbacks(longPressed);
 			redrawListener.redraw();
-			return true;
+			break;
 		case MotionEvent.ACTION_MOVE:
-
 			if ((diffX > 0 && diffY < 0) || ((diffX < 0 && diffY > 0)))
 				radianOffset = lastOffset + (radianStart - radianNew)
 						* spinSensitivity;
@@ -152,13 +173,26 @@ public class SwipeController {
 			radianStart = radianNew;
 			lastOffset = radianOffset;
 			addFlingPoint(new Date().getTime(), radianOffset);
-
 			redrawListener.redraw();
-			return true;
-
+			break;
+		default:
+			break;
 		}
 
-		return false;
+		return true;
+	}
+
+	private static float distance(float x1, float y1, float x2, float y2) {
+		float dx = x1 - x2;
+		float dy = y1 - y2;
+		float distanceInPx = (float) Math.sqrt(dx * dx + dy * dy);
+		return pxToDp(distanceInPx);
+	}
+
+	private static float pxToDp(float px) {
+		return px
+				/ TiApplication.getInstance().getResources()
+						.getDisplayMetrics().density;
 	}
 
 	/**
